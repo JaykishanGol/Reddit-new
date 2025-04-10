@@ -1,65 +1,220 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>OMDb + Reddit Search</title>
-  <style>
-    body { font-family: Arial; padding: 20px; background: #f4f4f4; }
-    input, button { padding: 10px; font-size: 16px; margin: 5px 0; }
-    .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #ccc; margin-top: 20px; }
-    .reddit-link { margin: 5px 0; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Earth Orbit Simulation (View from Moon - Textures)</title>
+    <style>
+        body { margin: 0; overflow: hidden; background-color: #000; }
+        canvas { display: block; }
+        #info {
+            position: absolute;
+            top: 10px;
+            width: 100%;
+            text-align: center;
+            color: white;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            z-index: 100;
+        }
+    </style>
 </head>
 <body>
+    <div id="info">Earth orbiting Sun - View from the Moon (with Textures)</div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, camera, renderer;
+        let sun, earth, moon;
+        let earthOrbitRadius = 150;
+        let moonOrbitRadius = 20;
+        let earthOrbitSpeed = 0.001; // Adjusted for visibility
+        let moonOrbitSpeed = 0.01;  // Adjusted for visibility
+        let earthRotationSpeed = 0.01;
+        let clock = new THREE.Clock();
+        let textureLoader; // Declare texture loader
 
-  <h1>Movie & TV Info + Reddit Discussions</h1>
-  <input type="text" id="titleInput" placeholder="Enter title (e.g., Inception)">
-  <button onclick="search()">Search</button>
+        // Initialization function
+        function init() {
+            // --- Scene Setup ---
+            scene = new THREE.Scene();
 
-  <div id="result"></div>
+            // --- Texture Loader ---
+            textureLoader = new THREE.TextureLoader(); // Initialize loader
+            // Optional: Set crossOrigin for the loader if textures are hosted with CORS headers
+            // textureLoader.setCrossOrigin(''); // Uncomment if textures are known to support CORS
 
-  <script>
-    const OMDB_API_KEY = '61fa41f0';
+            // --- Camera Setup ---
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 3000); // Increased far plane for starfield
+            camera.position.set(earthOrbitRadius + moonOrbitRadius + 10, 20, 0);
 
-    async function search() {
-      const title = document.getElementById('titleInput').value;
-      const resultDiv = document.getElementById('result');
-      resultDiv.innerHTML = 'Loading...';
+            // --- Renderer Setup ---
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setClearColor(0x000000);
+            document.body.appendChild(renderer.domElement);
 
-      try {
-        const omdbRes = await fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${OMDB_API_KEY}`);
-        const omdbData = await omdbRes.json();
+            // --- Lighting ---
+            const ambientLight = new THREE.AmbientLight(0x404040); // Slightly brighter ambient light for textures
+            scene.add(ambientLight);
+            // Point light originates from the Sun's position
+            const pointLight = new THREE.PointLight(0xffffff, 1.5, 3000); // Increased range
+            pointLight.position.set(0, 0, 0);
+            scene.add(pointLight);
 
-        if (omdbData.Response === 'False') {
-          resultDiv.innerHTML = `<p>Not found in OMDb.</p>`;
-          return;
+            // --- Create Celestial Bodies ---
+            createSun(); // Now uses a texture
+            createEarth();
+            createMoon();
+            createStarfield(); // Use texture-based starfield
+
+            // --- Event Listeners ---
+            window.addEventListener('resize', onWindowResize, false);
+
+            // --- Start Animation ---
+            animate();
         }
 
-        const redditRes = await fetch(`https://api.pushshift.io/reddit/search/submission/?q=${encodeURIComponent(title)}&size=5`);
-        const redditData = await redditRes.json();
+        // --- Create Sun ---
+        function createSun() {
+            const sunGeometry = new THREE.SphereGeometry(20, 64, 64);
+            // Load Sun texture
+            const sunTextureUrl = 'https://raw.githubusercontent.com/mrdoob/three.js/dev/examples/textures/planets/sun.jpg';
+            console.log(`Attempting to load Sun texture from: ${sunTextureUrl}`);
+            const sunTexture = textureLoader.load(
+                sunTextureUrl,
+                 () => { console.log("Sun texture loaded successfully."); },
+                 undefined, // Progress callback
+                 (err) => {
+                    // Log more detailed error information if possible
+                    console.error(`Error loading Sun texture from ${sunTextureUrl}. Status: ${err.type}. Is Trusted: ${err.isTrusted}. This might be a CORS issue if running locally via file://. Consider using a local server or reverting to a basic color.`);
+                    // Fallback to yellow color if texture fails to load
+                    if (sun) { // Ensure sun mesh exists before modifying
+                      sun.material = new THREE.MeshBasicMaterial({ color: 0xffff00 });
+                      sun.material.needsUpdate = true; // Tell three.js to update material
+                    }
+                 }
+            );
+            // Use MeshBasicMaterial so the sun appears self-illuminated
+            const sunMaterial = new THREE.MeshBasicMaterial({ map: sunTexture });
+            sun = new THREE.Mesh(sunGeometry, sunMaterial);
+            scene.add(sun);
+        }
 
-        const redditLinks = redditData.data.map(post =>
-          `<div class="reddit-link"><a href="https://www.reddit.com${post.permalink}" target="_blank">${post.title}</a></div>`
-        ).join('');
+        // --- Create Earth ---
+        function createEarth() {
+            const earthGeometry = new THREE.SphereGeometry(5, 64, 64);
+            const earthTextureUrl = 'https://threejs.org/examples/textures/land_ocean_ice_cloud_2048.jpg';
+            console.log(`Attempting to load Earth texture from: ${earthTextureUrl}`);
+            const earthTexture = textureLoader.load(
+                earthTextureUrl,
+                 () => { console.log("Earth texture loaded successfully."); },
+                 undefined,
+                 (err) => { console.error(`Error loading Earth texture from ${earthTextureUrl}. Status: ${err.type}. Is Trusted: ${err.isTrusted}.`); }
+            );
+            const earthMaterial = new THREE.MeshStandardMaterial({
+                map: earthTexture,
+                roughness: 0.9,
+                metalness: 0.1
+            });
+            earth = new THREE.Mesh(earthGeometry, earthMaterial);
+            earth.position.x = earthOrbitRadius;
+            scene.add(earth);
+        }
 
-        resultDiv.innerHTML = `
-          <div class="card">
-            <h2>${omdbData.Title} (${omdbData.Year})</h2>
-            <img src="${omdbData.Poster}" alt="Poster" style="max-width: 200px;">
-            <p><strong>Plot:</strong> ${omdbData.Plot}</p>
-            <p><strong>Genre:</strong> ${omdbData.Genre}</p>
-            <p><strong>IMDB Rating:</strong> ${omdbData.imdbRating}</p>
-            <h3>Reddit Discussions:</h3>
-            ${redditLinks || 'No Reddit posts found.'}
-          </div>
-        `;
-      } catch (err) {
-        console.error(err);
-        resultDiv.innerHTML = `<p>Error occurred. Try again.</p>`;
-      }
-    }
-  </script>
+        // --- Create Moon ---
+        function createMoon() {
+            const moonGeometry = new THREE.SphereGeometry(1.5, 32, 32);
+            const moonTextureUrl = 'https://threejs.org/examples/textures/planets/moon_1024.jpg';
+             console.log(`Attempting to load Moon texture from: ${moonTextureUrl}`);
+            const moonTexture = textureLoader.load(
+                moonTextureUrl,
+                 () => { console.log("Moon texture loaded successfully."); },
+                 undefined,
+                 (err) => { console.error(`Error loading Moon texture from ${moonTextureUrl}. Status: ${err.type}. Is Trusted: ${err.isTrusted}.`); }
+            );
+            const moonMaterial = new THREE.MeshStandardMaterial({
+                map: moonTexture,
+                roughness: 0.95,
+                metalness: 0.1
+            });
+            moon = new THREE.Mesh(moonGeometry, moonMaterial);
+            earth.add(moon);
+        }
 
+        // --- Create Starfield using a Texture ---
+        function createStarfield() {
+            // Using a different texture URL from threejs.org examples, potentially more reliable
+            const starTextureUrl = 'https://threejs.org/examples/textures/2294472375_24a3b8ef46_o.jpg';
+            console.log(`Attempting to load Starfield texture from: ${starTextureUrl}`);
+            const starTexture = textureLoader.load(
+                starTextureUrl,
+                 () => { console.log("Starfield texture loaded successfully."); },
+                 undefined,
+                 (err) => {
+                     console.error(`Error loading Starfield texture from ${starTextureUrl}. Status: ${err.type}. Is Trusted: ${err.isTrusted}. This might be a CORS issue.`);
+                     // Optional: Fallback to original point starfield or black background if needed
+                 }
+            );
+            starTexture.mapping = THREE.EquirectangularReflectionMapping;
+
+            const starGeometry = new THREE.SphereGeometry(1500, 64, 64);
+            const starMaterial = new THREE.MeshBasicMaterial({
+                map: starTexture,
+                side: THREE.BackSide
+            });
+            const starField = new THREE.Mesh(starGeometry, starMaterial);
+            scene.add(starField);
+        }
+
+
+        // --- Handle Window Resize ---
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        // --- Animation Loop ---
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const elapsedTime = clock.getElapsedTime();
+
+            // --- Update Rotations ---
+            if (earth) earth.rotation.y += earthRotationSpeed; // Check if earth exists
+
+            // --- Update Orbits ---
+            if (earth) { // Check if earth exists
+                earth.position.x = Math.cos(elapsedTime * earthOrbitSpeed * 10) * earthOrbitRadius;
+                earth.position.z = Math.sin(elapsedTime * earthOrbitSpeed * 10) * earthOrbitRadius;
+            }
+
+            if (moon) { // Check if moon exists
+                moon.position.x = Math.cos(elapsedTime * moonOrbitSpeed * 10) * moonOrbitRadius;
+                moon.position.z = Math.sin(elapsedTime * moonOrbitSpeed * 10) * moonOrbitRadius;
+            }
+
+            // --- Update Camera Position (View from Moon) ---
+            if (moon && earth) { // Ensure both moon and earth exist
+                const moonWorldPosition = new THREE.Vector3();
+                moon.getWorldPosition(moonWorldPosition);
+
+                const earthWorldPosition = new THREE.Vector3();
+                earth.getWorldPosition(earthWorldPosition);
+
+                const direction = new THREE.Vector3().subVectors(moonWorldPosition, earthWorldPosition).normalize();
+                const cameraOffset = direction.multiplyScalar(5);
+                camera.position.copy(moonWorldPosition).add(cameraOffset);
+                camera.lookAt(earthWorldPosition);
+            }
+
+            // --- Render the Scene ---
+            renderer.render(scene, camera);
+        }
+
+        // --- Start the simulation ---
+        window.onload = init;
+
+    </script>
 </body>
 </html>

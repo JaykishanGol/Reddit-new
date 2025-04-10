@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head >
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>TV Show Grid with Zooming Background</title>
@@ -28,7 +28,7 @@
             left: 0;
             width: 100vw; /* Full viewport width */
             height: 100vh; /* Full viewport height */
-            overflow: hidden; /* Hide parts of image outside container */
+            overflow: hidden; /* Hide parts of the image outside container */
             z-index: 0; /* Behind the grid content */
         }
 
@@ -97,7 +97,7 @@
         .grid-item:hover:not(.empty) { /* Exclude empty items from hover effect */
              transform: translateY(-5px); /* Lift item slightly */
              /* Increase shadow intensity on hover */
-             box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+             box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);   
         }
 
         /* --- Styling for Content within Grid Items --- */
@@ -164,7 +164,7 @@
              border: 1px dashed rgba(255, 255, 255, 0.2);
         }
          .grid-item.empty:hover {
-             /* Ensure no transform/shadow change on hover */
+             /* Ensure no transform or shadow change on hover */
              transform: none;
              box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
          }
@@ -198,7 +198,7 @@
              }
         }
 
-    </style>
+    </style>    
 </head>
 <body>
 
@@ -260,7 +260,7 @@
                  class="show-poster"
                  id="pantheon-poster"
                  onerror="this.onerror=null; this.src='https://placehold.co/200x300/333333/eeeeee?text=Pantheon'; this.alt='Image not found'; console.error('Error loading image: pantheon.jpg');">
-        </div> <div class="grid-item empty"></div>
+        </div>
         <div class="grid-item empty"></div>
         <div class="grid-item empty"></div>
         <div class="grid-item empty"></div>
@@ -268,6 +268,108 @@
         <div class="grid-item empty"></div>
         <div class="grid-item empty"></div>
         <div class="grid-item empty"></div>
+    </div>
+    <button id="addNewShowButton" style="display: block; margin: 20px auto; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Add New Show</button>
+
+    <!-- Modal for Adding New Show -->
+    <div id="addShowModal" style="display: none; position: fixed; z-index: 2; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
+        <div style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 10px;">
+            <span id="closeModal" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+            <h2>Add New Show</h2>
+            <label for="showTitle">Show Title:</label><br>
+            <input type="text" id="showTitle" name="showTitle" style="width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px;"><br>
+            <label for="redditLink">Reddit Link:</label><br>
+            <input type="url" id="redditLink" name="redditLink" style="width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px;"><br>
+            <label for="posterImageUrl">Poster Image URL:</label><br>
+            <input type="url" id="posterImageUrl" name="posterImageUrl" style="width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px;"><br>
+            <button id="submitNewShow" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const gridContainer = document.querySelector('.grid-container');
+            const addNewShowButton = document.getElementById('addNewShowButton');
+            const modal = document.getElementById('addShowModal');
+            const closeModal = document.getElementById('closeModal');
+            const submitNewShow = document.getElementById('submitNewShow');
+
+            addNewShowButton.addEventListener('click', function() {
+                modal.style.display = "block";
+            });
+
+            closeModal.addEventListener('click', function() {
+                modal.style.display = "none";
+                // create default show when cancelled
+                const newShow = createNewShowItem();
+                gridContainer.appendChild(newShow)
+            });
+
+            submitNewShow.addEventListener('click', function() {
+                const showTitle = document.getElementById('showTitle').value;
+                const redditLink = document.getElementById('redditLink').value;
+                const posterImageUrl = document.getElementById('posterImageUrl').value;
+
+                if (showTitle || redditLink || posterImageUrl) {
+                    const newShow = createNewShowItem(showTitle, redditLink, posterImageUrl);
+                    gridContainer.appendChild(newShow);
+                } else{
+                    const newShow = createNewShowItem();
+                    gridContainer.appendChild(newShow);
+                }
+
+                modal.style.display = "none";
+                // Clear input fields after submission
+                document.getElementById('showTitle').value = '';
+                document.getElementById('redditLink').value = '';
+                document.getElementById('posterImageUrl').value = '';
+                
+            });
+
+            function createNewShowItem(title = 'New Show', link = '#', imageUrl = 'https://placehold.co/200x300/333333/eeeeee?text=New+Show') {
+                const newGridItem = document.createElement('div');
+                newGridItem.classList.add('grid-item');
+
+                const newHeading = document.createElement('h2');
+                const newLink = document.createElement('a');
+
+                if (link !== '#') {
+                    newLink.href = link;
+                } else {
+                    newLink.href = link;
+                }
+
+                if (title !== 'New Show') {
+                    newLink.textContent = title;
+                } else {
+                    newLink.textContent = title;
+                }
+
+                newLink.target = '_blank';
+                newLink.rel = 'noopener noreferrer';
+                newHeading.appendChild(newLink);
+
+                const newImage = document.createElement('img');
+                if (imageUrl !== 'https://placehold.co/200x300/333333/eeeeee?text=New+Show') {
+                    newImage.src = imageUrl;
+                }else{
+                    newImage.src = 'https://placehold.co/200x300/333333/eeeeee?text=New+Show';
+                }
+                newImage.alt = 'Poster for '+title;
+                newImage.classList.add('show-poster');
+                newImage.onerror = function() {
+                  this.onerror = null;
+                  this.src = 'https://placehold.co/200x300/333333/eeeeee?text=Image+Not+Found';
+                  this.alt = 'Image not found';
+                };
+
+                newGridItem.appendChild(newHeading);
+                newGridItem.appendChild(newImage);
+
+                return newGridItem;
+            }
+        });
+    </script>
 
     </div> </body>
 </html>

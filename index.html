@@ -3,39 +3,63 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>TV Show Grid with Animated 3D Background</title> <style>
+    <title>TV Show Grid with Zooming Background</title>
+    <style>
         /* --- Basic Reset & Font Definition --- */
         body, html {
+            height: 100%;
             margin: 0;
             padding: 0;
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-            height: 100%;
-            overflow-x: hidden;
-            background-color: #000; /* Black background */
+            background-color: #000; /* Black background for the page */
+            overflow-x: hidden; /* Prevent horizontal scroll */
+            /* overflow-y: auto; */ /* Allow vertical scroll for content if grid becomes long */
         }
 
         *, *:before, *:after {
             box-sizing: inherit;
         }
 
-        /* --- Style for Three.js Canvas --- */
-        canvas {
-            display: block;
-            position: fixed; /* Fix canvas to viewport */
+        /* --- Background Image Container --- */
+        .image-container {
+            position: fixed; /* Fix to viewport */
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: -1; /* Place behind all other content */
-            filter: blur(3px); /* RE-ADDED: Gaussian blur */
+            overflow: hidden; /* Clip the zooming image */
+            z-index: -1; /* Behind the grid */
         }
+
+        /* --- The Zooming Background Image --- */
+        .zoom-image {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Cover the container */
+            transform-origin: center center; /* Zoom from the center */
+            /* Apply the animation */
+            animation: slowZoom 20s linear infinite alternate; /* name duration timing-function iteration-count direction */
+            will-change: transform; /* Optimize animation */
+        }
+
+        /* --- Zoom Animation Keyframes --- */
+        @keyframes slowZoom {
+            from {
+                transform: scale(1); /* Start at normal size */
+            }
+            to {
+                transform: scale(1.2); /* Zoom in slightly (adjust as needed) */
+            }
+        }
+
 
         /* --- Content Styling --- */
         body {
-            color: #333; /* Text color for content inside grid items */
+            color: #333; /* Default text color (mostly for inside items) */
             line-height: 1.6;
-            /* padding: 20px; */ /* Removed body padding */
+            /* No body padding needed, grid container handles margins */
         }
 
         /* --- Grid Container Styling --- */
@@ -44,17 +68,17 @@
             grid-template-columns: repeat(4, 1fr);
             gap: 25px;
             max-width: 1300px;
-            margin: 60px auto 40px auto; /* Add more top margin */
+            margin: 60px auto 40px auto; /* Add top/bottom margin */
             padding: 10px;
             position: relative; /* Establish stacking context */
-            z-index: 1; /* Ensure grid is above canvas */
+            z-index: 1; /* Ensure grid is above background */
         }
 
-        /* --- Grid Item Styling (Frosted Glass) --- */
+        /* --- Grid Item Styling (Restored Frosted Glass) --- */
         .grid-item {
-            background-color: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent white */
+            backdrop-filter: blur(8px); /* Frosted glass blur */
+            -webkit-backdrop-filter: blur(8px); /* Safari support */
             border-radius: 12px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -84,15 +108,15 @@
         }
 
         .grid-item h2 a {
-            color: #ffebcd; /* BlanchedAlmond */
+            color: #ffebcd; /* BlanchedAlmond - Lighter color for dark bg */
             text-decoration: none;
             transition: color 0.2s ease-in-out;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3); /* Restore shadow */
         }
 
         .grid-item h2 a:hover,
         .grid-item h2 a:focus {
-            color: #fff;
+            color: #fff; /* White on hover */
             text-decoration: underline;
         }
 
@@ -105,22 +129,23 @@
             max-height: 250px;
             margin: 15px 0 0 0;
             border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle border */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Restore shadow */
             object-fit: contain;
-            background-color: rgba(0,0,0,0.1);
+            background-color: rgba(0,0,0,0.1); /* Dark placeholder bg */
         }
 
         /* --- Styling for Empty Grid Items --- */
         .grid-item.empty {
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px); /* Keep extra blur */
             -webkit-backdrop-filter: blur(15px);
             aspect-ratio: 2 / 3;
-            background-color: rgba(255, 255, 255, 0.08);
+            background-color: rgba(255, 255, 255, 0.08); /* Keep different bg */
              transition: none;
              transform: none;
              box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
              padding: 0;
+             border: 1px dashed rgba(255, 255, 255, 0.2); /* Lighter dashed border */
         }
          .grid-item.empty:hover {
              transform: none;
@@ -155,6 +180,13 @@
     </style>
 </head>
 <body>
+
+    <div class="image-container">
+        <img class="zoom-image"
+             src="image.png" alt="Auto zooming background"
+             onerror="this.onerror=null; this.src='https://placehold.co/1920x1080/000000/ffffff?text=image.png+Not+Found'; console.error('Error: Background image image.png not found.');">
+             </div>
+
     <div class="grid-container">
         <div class="grid-item">
             <h2>
@@ -200,245 +232,5 @@
         <div class="grid-item empty"></div>
     </div>
 
-    <script type="importmap">
-        {
-          "imports": {
-            "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js",
-            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/"
-          }
-        }
-    </script>
-
-    <script type="module">
-        // Import necessary Three.js modules
-        import * as THREE from 'three';
-        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-        import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-        import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
-        import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
-        import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
-
-        // --- Global Variables ---
-        let scene, camera, renderer, controls, composer, bloomPass;
-        let earthSurfaceMesh, earthWireframeMesh;
-        let magneticFieldContainer, magneticFieldParticles = null;
-        const clock = new THREE.Clock(); // Clock for animation timing
-
-        // --- Constants ---
-        const EARTH_RADIUS = 5;
-        const TILT_ANGLE_DEG = 11;
-        const WIREFRAME_SCALE = 1.001;
-        const BASE_FOV = 75; // Base camera field of view
-        const FOV_ZOOM_AMOUNT = 2; // How much the FOV changes for zoom effect (+/- degrees)
-        const FOV_ZOOM_SPEED = 0.2; // How fast the zoom oscillates (lower is slower)
-
-        // --- Default Parameters ---
-        const defaultParticleSize = 0.15;
-        const defaultShowField = true;
-        const defaultEarthBrightness = 0.8;
-        const defaultNumLines = 32;
-        const defaultNumSegments = 12;
-        const defaultPointsPerLineSegment = 50;
-
-        // --- Initialization Function ---
-        function init() {
-          console.log("Initializing Three.js scene...");
-
-          scene = new THREE.Scene();
-
-          camera = new THREE.PerspectiveCamera(BASE_FOV, window.innerWidth / window.innerHeight, 0.1, 1000);
-          camera.position.z = 15;
-
-          renderer = new THREE.WebGLRenderer({ antialias: true });
-          renderer.setSize(window.innerWidth, window.innerHeight);
-          renderer.setPixelRatio(window.devicePixelRatio);
-          renderer.toneMapping = THREE.ACESFilmicToneMapping;
-          renderer.toneMappingExposure = 1.0;
-          document.body.appendChild(renderer.domElement);
-
-          const earthGeometry = new THREE.SphereGeometry(EARTH_RADIUS, 64, 64);
-
-          const textureLoader = new THREE.TextureLoader();
-          console.log("Loading Earth texture...");
-          const mapTexture = textureLoader.load(
-            'https://threejs.org/examples/textures/planets/earth_atmos_2048.jpg',
-            () => { console.log("Earth texture loaded."); },
-            undefined,
-            (err) => {
-              console.error('Error loading texture:', err);
-              if (earthSurfaceMesh) {
-                earthSurfaceMesh.material.dispose();
-                earthSurfaceMesh.material = new THREE.MeshBasicMaterial({ color: 0x446688, wireframe: true });
-              }
-            }
-          );
-          mapTexture.colorSpace = THREE.SRGBColorSpace;
-
-          const earthSurfaceMaterial = new THREE.MeshStandardMaterial({
-            map: mapTexture, color: 0xffffff, roughness: 0.85, metalness: 0.1
-          });
-
-          const earthWireframeMaterial = new THREE.MeshStandardMaterial({
-            color: 0x000000, emissive: 0x88ddff, emissiveIntensity: defaultEarthBrightness,
-            wireframe: true, transparent: true, opacity: 0.9
-          });
-
-          earthSurfaceMesh = new THREE.Mesh(earthGeometry.clone(), earthSurfaceMaterial);
-          scene.add(earthSurfaceMesh);
-
-          earthWireframeMesh = new THREE.Mesh(earthGeometry.clone(), earthWireframeMaterial);
-          earthWireframeMesh.scale.set(WIREFRAME_SCALE, WIREFRAME_SCALE, WIREFRAME_SCALE);
-          scene.add(earthWireframeMesh);
-
-          magneticFieldContainer = new THREE.Group();
-          magneticFieldContainer.visible = defaultShowField;
-          createMagneticFieldParticles(magneticFieldContainer);
-          magneticFieldContainer.rotation.z = THREE.MathUtils.degToRad(-TILT_ANGLE_DEG);
-          scene.add(magneticFieldContainer);
-
-          addStarfield();
-
-          controls = new OrbitControls(camera, renderer.domElement);
-          controls.enableDamping = true;
-          controls.dampingFactor = 0.05;
-          controls.minDistance = EARTH_RADIUS + 2;
-          controls.maxDistance = 50;
-
-          setupPostProcessing();
-
-          window.addEventListener('resize', onWindowResize, false);
-
-          console.log("Scene ready. Drag to rotate.");
-          animate();
-        }
-
-        function addStarfield() {
-          const starGeo = new THREE.BufferGeometry();
-          const starVertices = [];
-          const starCount = 10000;
-          for (let i = 0; i < starCount; i++) {
-            const x = THREE.MathUtils.randFloatSpread(1000);
-            const y = THREE.MathUtils.randFloatSpread(1000);
-            const z = THREE.MathUtils.randFloatSpread(1000);
-            starVertices.push(x, y, z);
-          }
-          starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starVertices, 3));
-          const starMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.5, sizeAttenuation: true });
-          const starField = new THREE.Points(starGeo, starMat);
-          scene.add(starField);
-        }
-
-        function createParticleTexture() {
-          const size = 16;
-          const canvas = document.createElement('canvas');
-          canvas.width = size; canvas.height = size;
-          const context = canvas.getContext('2d');
-          const centerX = size / 2, centerY = size / 2, radius = size / 2;
-          const gradient = context.createRadialGradient(centerX, centerY, 0, centerX, centerY, radius);
-          gradient.addColorStop(0, 'rgba(255,255,255,1)');
-          gradient.addColorStop(0.2, 'rgba(255,255,0,1)');
-          gradient.addColorStop(0.4, 'rgba(255,165,0,0.8)');
-          gradient.addColorStop(1, 'rgba(255,100,0,0)');
-          context.fillStyle = gradient;
-          context.fillRect(0, 0, size, size);
-          return new THREE.CanvasTexture(canvas);
-        }
-
-        function getFieldLineSegment(startRadius, numPoints) {
-          const points = [];
-          const minTheta = 0.01; const maxTheta = Math.PI / 2;
-          for (let i = 0; i <= numPoints; i++) {
-            const theta = minTheta + (maxTheta - minTheta) * (i / numPoints);
-            const sinTheta = Math.sin(theta);
-            const r = startRadius * sinTheta * sinTheta;
-            if (r < EARTH_RADIUS * 0.8) continue;
-            const y = r * Math.cos(theta); const x = r * sinTheta;
-            points.push(new THREE.Vector3(x, y, 0));
-          }
-          return points;
-        }
-
-        function createMagneticFieldParticles(container) {
-          console.log(`Creating field: Lines=${defaultNumLines}, Segments=${defaultNumSegments}, Points=${defaultPointsPerLineSegment}`);
-          if (magneticFieldParticles) {
-            container.remove(magneticFieldParticles);
-            if(magneticFieldParticles.geometry) magneticFieldParticles.geometry.dispose();
-            if(magneticFieldParticles.material?.map) magneticFieldParticles.material.map.dispose();
-            if(magneticFieldParticles.material) magneticFieldParticles.material.dispose();
-            magneticFieldParticles = null;
-          }
-          const particleTexture = createParticleTexture();
-          const allPoints = [];
-          for (let i = 1; i <= defaultNumSegments; i++) {
-            const startRadius = EARTH_RADIUS * (1.1 + i * (10 / defaultNumSegments) * 0.3);
-            const segmentPoints = getFieldLineSegment(startRadius, defaultPointsPerLineSegment);
-            if (segmentPoints.length === 0) continue;
-            const fullLinePoints = [...segmentPoints];
-            for(let j = segmentPoints.length - 2; j >= 0; j--) {
-              fullLinePoints.push(new THREE.Vector3(segmentPoints[j].x, -segmentPoints[j].y, 0));
-            }
-            for (let j = 0; j < defaultNumLines; j++) {
-              const angle = (Math.PI * 2 * j) / defaultNumLines;
-              const rotationMatrix = new THREE.Matrix4().makeRotationY(angle);
-              fullLinePoints.forEach(p => allPoints.push(p.clone().applyMatrix4(rotationMatrix)));
-            }
-          }
-          const geometry = new THREE.BufferGeometry().setFromPoints(allPoints);
-          const material = new THREE.PointsMaterial({
-            color: 0xffaa00, size: defaultParticleSize, sizeAttenuation: true,
-            map: particleTexture, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending
-          });
-          magneticFieldParticles = new THREE.Points(geometry, material);
-          container.add(magneticFieldParticles);
-          console.log("Magnetic field generated.");
-        }
-
-        function setupPostProcessing() {
-          composer = new EffectComposer(renderer);
-          const renderPass = new RenderPass(scene, camera);
-          composer.addPass(renderPass);
-          bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.0, 0.3, 0.6);
-          composer.addPass(bloomPass);
-          const outputPass = new OutputPass();
-          composer.addPass(outputPass);
-        }
-
-        function onWindowResize() {
-          camera.aspect = window.innerWidth / window.innerHeight;
-          camera.updateProjectionMatrix();
-          renderer.setSize(window.innerWidth, window.innerHeight);
-          composer.setSize(window.innerWidth, window.innerHeight);
-        }
-
-        // --- Animation Loop ---
-        function animate() {
-          requestAnimationFrame(animate); // Loop animation
-
-          const elapsedTime = clock.getElapsedTime(); // Get time elapsed
-
-          // --- Camera FOV Animation (Slow Zoom In/Out) ---
-          // Use a sine wave based on time to oscillate the FOV
-          const fovOffset = Math.sin(elapsedTime * FOV_ZOOM_SPEED) * FOV_ZOOM_AMOUNT;
-          camera.fov = BASE_FOV + fovOffset;
-          camera.updateProjectionMatrix(); // IMPORTANT: Update camera after changing FOV
-
-          // Subtle Earth rotation
-          earthSurfaceMesh.rotation.y += 0.0005;
-          earthWireframeMesh.rotation.y += 0.0005;
-
-          controls.update(); // Update controls (needed for damping)
-
-          // Use composer render method
-          if (composer) {
-             composer.render();
-          } else {
-             renderer.render(scene, camera); // Fallback if composer failed
-          }
-        }
-
-        // --- Start Everything ---
-        init();
-
-    </script>
-</body>
+    </body>
 </html>

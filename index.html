@@ -90,10 +90,11 @@
             flex-direction: column; /* Stack children vertically */
             justify-content: flex-start; /* Align items to the top */
             align-items: center; /* Center items horizontally */
+            min-height: 350px; /* Ensure items have a minimum height */
         }
 
         /* --- Grid Item Hover Effect --- */
-        .grid-item:hover {
+        .grid-item:hover:not(.empty) { /* Exclude empty items from hover effect */
              transform: translateY(-5px); /* Lift item slightly */
              /* Increase shadow intensity on hover */
              box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
@@ -106,6 +107,7 @@
             font-weight: 500; /* Medium font weight */
             font-size: 1.1em; /* Slightly larger font size */
             width: 100%; /* Take full width */
+            flex-shrink: 0; /* Prevent h2 from shrinking */
         }
 
         /* --- Styling for Links within Headings --- */
@@ -131,7 +133,10 @@
             width: auto; /* Maintain aspect ratio */
             height: auto; /* Maintain aspect ratio */
             max-height: 250px; /* Limit maximum height */
-            margin: 15px 0 0 0; /* Top margin */
+            margin-top: auto; /* Push poster towards the bottom */
+            margin-bottom: 0; /* Align to bottom */
+            margin-left: auto; /* Center horizontally */
+            margin-right: auto; /* Center horizontally */
             border-radius: 8px; /* Rounded corners for poster */
             /* Subtle border */
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -144,6 +149,7 @@
 
         /* --- Styling for Empty Grid Items (Placeholders) --- */
         .grid-item.empty {
+            min-height: 0; /* Override min-height for empty items */
             backdrop-filter: blur(15px); /* Stronger blur for empty items */
             -webkit-backdrop-filter: blur(15px);
             aspect-ratio: 2 / 3; /* Maintain a typical poster aspect ratio */
@@ -177,13 +183,19 @@
             .grid-container {
                 grid-template-columns: repeat(2, 1fr); /* 2 columns */
             }
+            .grid-item {
+                 min-height: 300px; /* Adjust min height for smaller screens */
+            }
         }
         @media (max-width: 480px) {
             .grid-container {
                 grid-template-columns: 1fr; /* 1 column */
                 gap: 15px; /* Reduce gap */
             }
-             .grid-item { padding: 15px; } /* Reduce padding */
+             .grid-item {
+                 padding: 15px; /* Reduce padding */
+                 min-height: 280px; /* Adjust min height for mobile */
+             }
         }
 
     </style>
@@ -194,7 +206,7 @@
         <img class="zoom-image"
              src="image.png"
              alt="Auto zooming background"
-             onerror="this.onerror=null; this.src='https://placehold.co/1920x1080/000000/ffffff?text=image.png+Not+Found'; console.error('Error: Background image image.png not found.');">
+             onerror="this.onerror=null; this.src='https://placehold.co/1920x1080/000000/ffffff?text=Background+Not+Found'; console.error('Error: Background image image.png not found.');">
     </div>
 
     <div class="grid-container">
@@ -205,10 +217,10 @@
                 </a>
             </h2>
             <img src="daredevil-born-again-poster.png"
-                 alt="Poster for Daredevil: Born Again showing Kingpin and Daredevil"
+                 alt="Poster for Daredevil: Born Again"
                  class="show-poster"
                  id="daredevil-poster"
-                 onerror="this.onerror=null; this.src='https://placehold.co/200x300/333333/eeeeee?text=Daredevil'; console.error('Error loading image: daredevil-born-again-poster.png');">
+                 onerror="this.onerror=null; this.src='https://placehold.co/200x300/333333/eeeeee?text=Daredevil'; this.alt='Image not found'; console.error('Error loading image: daredevil-born-again-poster.png');">
         </div>
 
         <div class="grid-item">
@@ -218,10 +230,10 @@
                 </a>
             </h2>
              <img src="The Studio.jpg"
-                 alt="Poster for The Studio TV show featuring Seth Rogen"
+                 alt="Poster for The Studio"
                  class="show-poster"
                  id="studio-poster"
-                 onerror="this.onerror=null; this.src='https://placehold.co/200x300/333333/eeeeee?text=The+Studio'; console.error('Error loading image: The Studio.jpg');">
+                 onerror="this.onerror=null; this.src='https://placehold.co/200x300/333333/eeeeee?text=The+Studio'; this.alt='Image not found'; console.error('Error loading image: The Studio.jpg');">
         </div>
 
         <div class="grid-item">
@@ -231,11 +243,14 @@
                 </a>
             </h2>
              <img src="common side effect.jpg"
-                  alt="Poster for Common Side Effects animated series"
+                  alt="Poster for Common Side Effects"
                   class="show-poster"
                   id="cse-poster"
-                  onerror="this.onerror=null; this.src='https://placehold.co/200x300/333333/eeeeee?text=CSE'; console.error('Error loading image: common side effect.jpg');">
-        </div> <div class="grid-item"> <h2>
+                  onerror="this.onerror=null; this.src='https://placehold.co/200x300/333333/eeeeee?text=CSE'; this.alt='Image not found'; console.error('Error loading image: common side effect.jpg');">
+        </div>
+
+        <div class="grid-item">
+            <h2>
                 <a href="https://www.reddit.com/r/PantheonShow/comments/18wdhr5/pantheon_series_episode_discussion_threads/" target="_blank" rel="noopener noreferrer">
                     Pantheon
                 </a>
@@ -244,8 +259,9 @@
                  alt="Poster for Pantheon"
                  class="show-poster"
                  id="pantheon-poster"
-                 onerror="this.onerror=null; this.src='https://placehold.co/200x300/333333/eeeeee?text=Pantheon'; console.error('Error loading image: pantheon.jpg');">
-</div> <div class="grid-item empty"></div> <div class="grid-item empty"></div>
+                 onerror="this.onerror=null; this.src='https://placehold.co/200x300/333333/eeeeee?text=Pantheon'; this.alt='Image not found'; console.error('Error loading image: pantheon.jpg');">
+        </div> <div class="grid-item empty"></div>
+        <div class="grid-item empty"></div>
         <div class="grid-item empty"></div>
         <div class="grid-item empty"></div>
         <div class="grid-item empty"></div>
@@ -253,5 +269,5 @@
         <div class="grid-item empty"></div>
         <div class="grid-item empty"></div>
 
-        </div> </body>
+    </div> </body>
 </html>

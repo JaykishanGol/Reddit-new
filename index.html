@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OMDb + Reddit Search</title>
+  <style>
+    body { font-family: Arial; padding: 20px; background: #f4f4f4; }
+    input, button { padding: 10px; font-size: 16px; margin: 5px 0; }
+    .card { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 0 10px #ccc; margin-top: 20px; }
+    .reddit-link { margin: 5px 0; }
+  </style>
+</head>
+<body>
+
+  <h1>Movie & TV Info + Reddit Discussions</h1>
+  <input type="text" id="titleInput" placeholder="Enter title (e.g., Inception)">
+  <button onclick="search()">Search</button>
+
+  <div id="result"></div>
+
+  <script>
+    const OMDB_API_KEY = '61fa41f0';
+
+    async function search() {
+      const title = document.getElementById('titleInput').value;
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = 'Loading...';
+
+      try {
+        const omdbRes = await fetch(`https://www.omdbapi.com/?t=${encodeURIComponent(title)}&apikey=${OMDB_API_KEY}`);
+        const omdbData = await omdbRes.json();
+
+        if (omdbData.Response === 'False') {
+          resultDiv.innerHTML = `<p>Not found in OMDb.</p>`;
+          return;
+        }
+
+        const redditRes = await fetch(`https://api.pushshift.io/reddit/search/submission/?q=${encodeURIComponent(title)}&size=5`);
+        const redditData = await redditRes.json();
+
+        const redditLinks = redditData.data.map(post =>
+          `<div class="reddit-link"><a href="https://www.reddit.com${post.permalink}" target="_blank">${post.title}</a></div>`
+        ).join('');
+
+        resultDiv.innerHTML = `
+          <div class="card">
+            <h2>${omdbData.Title} (${omdbData.Year})</h2>
+            <img src="${omdbData.Poster}" alt="Poster" style="max-width: 200px;">
+            <p><strong>Plot:</strong> ${omdbData.Plot}</p>
+            <p><strong>Genre:</strong> ${omdbData.Genre}</p>
+            <p><strong>IMDB Rating:</strong> ${omdbData.imdbRating}</p>
+            <h3>Reddit Discussions:</h3>
+            ${redditLinks || 'No Reddit posts found.'}
+          </div>
+        `;
+      } catch (err) {
+        console.error(err);
+        resultDiv.innerHTML = `<p>Error occurred. Try again.</p>`;
+      }
+    }
+  </script>
+
+</body>
+</html>

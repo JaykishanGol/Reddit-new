@@ -97,7 +97,7 @@
         .grid-item:hover:not(.empty) { /* Exclude empty items from hover effect */
              transform: translateY(-5px); /* Lift item slightly */
              /* Increase shadow intensity on hover */
-             box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);   
+             box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
         }
 
         /* --- Styling for Content within Grid Items --- */
@@ -198,7 +198,118 @@
              }
         }
 
-    </style>    
+        /* --- Modal Styling --- */
+        #addShowModal {
+            display: none;
+            position: fixed;
+            z-index: 2;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6); /* Slightly darker overlay */
+            backdrop-filter: blur(5px); /* Blur background behind modal */
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background-color: rgba(30, 30, 30, 0.9); /* Dark, semi-transparent background */
+            color: #eee; /* Light text */
+            margin: 10% auto; /* Adjusted margin for better centering */
+            padding: 30px; /* More padding */
+            border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border */
+            width: 90%; /* Responsive width */
+            max-width: 500px;
+            border-radius: 15px; /* More rounded corners */
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); /* Enhanced shadow */
+            position: relative; /* For close button positioning */
+        }
+
+        #closeModal {
+            color: #aaa;
+            position: absolute; /* Position relative to modal-content */
+            top: 15px;
+            right: 20px;
+            font-size: 32px; /* Larger close button */
+            font-weight: bold;
+            cursor: pointer;
+            transition: color 0.3s ease; /* Smooth hover effect */
+        }
+
+        #closeModal:hover,
+        #closeModal:focus {
+            color: #fff; /* Brighter on hover/focus */
+            text-decoration: none;
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            margin-bottom: 25px; /* More space below heading */
+            color: #fff; /* White heading */
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .modal-content label {
+            display: block; /* Labels on their own line */
+            margin-bottom: 8px; /* Space below label */
+            font-weight: 500;
+            color: #ccc; /* Lighter label color */
+        }
+
+        .modal-content input[type="text"],
+        .modal-content input[type="url"] {
+            width: 100%;
+            padding: 12px 15px; /* More padding in inputs */
+            margin-bottom: 20px; /* More space below inputs */
+            border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border */
+            border-radius: 8px; /* Rounded inputs */
+            background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent background */
+            color: #eee; /* Light text input */
+            font-size: 1em;
+            transition: border-color 0.3s ease, background-color 0.3s ease;
+        }
+
+        .modal-content input[type="text"]:focus,
+        .modal-content input[type="url"]:focus {
+            outline: none;
+            border-color: #4CAF50; /* Highlight focus with accent color */
+            background-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* --- Button Styling --- */
+        #addNewShowButton, #submitNewShow {
+            display: block;
+            margin: 30px auto 20px auto; /* Center button with more margin */
+            padding: 12px 25px; /* More padding */
+            background-color: #4CAF50; /* Green accent */
+            color: white;
+            border: none;
+            border-radius: 8px; /* Rounded corners */
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth transitions */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Button shadow */
+        }
+
+        #addNewShowButton:hover, #submitNewShow:hover {
+            background-color: #45a049; /* Darker green on hover */
+            transform: translateY(-2px); /* Slight lift on hover */
+        }
+        #addNewShowButton:active, #submitNewShow:active {
+             transform: translateY(0px); /* Push down on click */
+             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Smaller shadow on click */
+        }
+
+        #submitNewShow {
+            margin-top: 15px; /* Adjust margin specifically for submit */
+            margin-bottom: 0;
+            width: 100%; /* Make submit button full width */
+        }
+
+    </style>
 </head>
 <body>
 
@@ -261,8 +372,7 @@
                  id="pantheon-poster"
                  onerror="this.onerror=null; this.src='https://placehold.co/200x300/333333/eeeeee?text=Pantheon'; this.alt='Image not found'; console.error('Error loading image: pantheon.jpg');">
         </div>
-        <div class="grid-item empty"></div>
-        
+
         <div class="grid-item">
             <h2>
                 <a href="https://www.reddit.com/r/BlueEyeSamurai/comments/17vw2e4/blue_eye_samurai_season_1_episode_discussion_hub/" target="_blank" rel="noopener noreferrer">
@@ -273,25 +383,21 @@
                  alt="Poster for Blue Eye Samurai"
                  class="show-poster"
                  id="blue-eye-samurai-poster"
-                 onerror="this.onerror=null; this.src='https://placehold.co/200x300/333333/eeeeee?text=Blue+Eye+Samurai'; this.alt='Image not found'; console.error('Error loading image: Blue Eye Samurai poster.jpg');">
+                 onerror="this.onerror=null; this.src='https://placehold.co/200x300/333333/eeeeee?text=Blue+Eye+Samurai'; this.alt='Image not found'; console.error('Error loading image: unnamed.jpg');">
         </div>
-           <div class="grid-item empty"></div>
-          <div class="grid-item empty"></div>
-    </div>
-    <button id="addNewShowButton" style="display: block; margin: 20px auto; padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer;">Add New Show</button>
 
-    <!-- Modal for Adding New Show -->
-    <div id="addShowModal" style="display: none; position: fixed; z-index: 2; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);">
-        <div style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 10px;">
-            <span id="closeModal" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+        </div> <button id="addNewShowButton">Add New Show</button>
+
+    <div id="addShowModal">
+        <div class="modal-content"> <span id="closeModal">&times;</span>
             <h2>Add New Show</h2>
-            <label for="showTitle">Show Title:</label><br>
-            <input type="text" id="showTitle" name="showTitle" style="width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px;"><br>
-            <label for="redditLink">Reddit Link:</label><br>
-            <input type="url" id="redditLink" name="redditLink" style="width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px;"><br>
-            <label for="posterImageUrl">Poster Image URL:</label><br>
-            <input type="url" id="posterImageUrl" name="posterImageUrl" style="width: 100%; padding: 10px; margin: 8px 0; border: 1px solid #ccc; border-radius: 4px;"><br>
-            <button id="submitNewShow" style="background-color: #4CAF50; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Submit</button>
+            <label for="showTitle">Show Title:</label>
+            <input type="text" id="showTitle" name="showTitle" placeholder="e.g., Severance">
+            <label for="redditLink">Reddit Link:</label>
+            <input type="url" id="redditLink" name="redditLink" placeholder="https://www.reddit.com/r/...">
+            <label for="posterImageUrl">Poster Image URL:</label>
+            <input type="url" id="posterImageUrl" name="posterImageUrl" placeholder="https://example.com/image.jpg">
+            <button id="submitNewShow">Submit</button>
         </div>
     </div>
 
@@ -300,85 +406,51 @@
             const gridContainer = document.querySelector('.grid-container');
             const addNewShowButton = document.getElementById('addNewShowButton');
             const modal = document.getElementById('addShowModal');
-            const closeModal = document.getElementById('closeModal');
-            const submitNewShow = document.getElementById('submitNewShow');
+            const modalContent = modal.querySelector('.modal-content'); // Target modal content for click check
+            const closeModalButton = document.getElementById('closeModal'); // Changed variable name for clarity
+            const submitNewShowButton = document.getElementById('submitNewShow'); // Changed variable name for clarity
+            const showTitleInput = document.getElementById('showTitle');
+            const redditLinkInput = document.getElementById('redditLink');
+            const posterImageUrlInput = document.getElementById('posterImageUrl');
 
-            addNewShowButton.addEventListener('click', function() {
+            // --- Modal Handling ---
+
+            // Function to open the modal
+            function openModal() {
                 modal.style.display = "block";
-            });
-
-            closeModal.addEventListener('click', function() {
-                modal.style.display = "none";
-                // create default show when cancelled
-                const newShow = createNewShowItem();
-                gridContainer.appendChild(newShow)
-            });
-
-            submitNewShow.addEventListener('click', function() {
-                const showTitle = document.getElementById('showTitle').value;
-                const redditLink = document.getElementById('redditLink').value;
-                const posterImageUrl = document.getElementById('posterImageUrl').value;
-
-                if (showTitle || redditLink || posterImageUrl) {
-                    const newShow = createNewShowItem(showTitle, redditLink, posterImageUrl);
-                    gridContainer.appendChild(newShow);
-                } else{
-                    const newShow = createNewShowItem();
-                    gridContainer.appendChild(newShow);
-                }
-
-                modal.style.display = "none";
-                // Clear input fields after submission
-                document.getElementById('showTitle').value = '';
-                document.getElementById('redditLink').value = '';
-                document.getElementById('posterImageUrl').value = '';
-                
-            });
-
-            function createNewShowItem(title = 'New Show', link = '#', imageUrl = 'https://placehold.co/200x300/333333/eeeeee?text=New+Show') {
-                const newGridItem = document.createElement('div');
-                newGridItem.classList.add('grid-item');
-
-                const newHeading = document.createElement('h2');
-                const newLink = document.createElement('a');
-
-                if (link !== '#') {
-                    newLink.href = link;
-                } else {
-                    newLink.href = link;
-                }
-
-                if (title !== 'New Show') {
-                    newLink.textContent = title;
-                } else {
-                    newLink.textContent = title;
-                }
-
-                newLink.target = '_blank';
-                newLink.rel = 'noopener noreferrer';
-                newHeading.appendChild(newLink);
-
-                const newImage = document.createElement('img');
-                if (imageUrl !== 'https://placehold.co/200x300/333333/eeeeee?text=New+Show') {
-                    newImage.src = imageUrl;
-                }else{
-                    newImage.src = 'https://placehold.co/200x300/333333/eeeeee?text=New+Show';
-                }
-                newImage.alt = 'Poster for '+title;
-                newImage.classList.add('show-poster');
-                newImage.onerror = function() {
-                  this.onerror = null;
-                  this.src = 'https://placehold.co/200x300/333333/eeeeee?text=Image+Not+Found';
-                  this.alt = 'Image not found';
-                };
-
-                newGridItem.appendChild(newHeading);
-                newGridItem.appendChild(newImage);
-
-                return newGridItem;
             }
-        });
-    </script>
 
-    </div> </body>
-</html>
+            // Function to close the modal
+            function closeModal() {
+                modal.style.display = "none";
+                // Clear input fields when closing
+                showTitleInput.value = '';
+                redditLinkInput.value = '';
+                posterImageUrlInput.value = '';
+            }
+
+            // Event listener for the "Add New Show" button
+            addNewShowButton.addEventListener('click', openModal);
+
+            // Event listener for the close button (X)
+            closeModalButton.addEventListener('click', closeModal);
+
+            // Event listener to close modal if clicked outside the modal content
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) { // Check if the click is directly on the modal background
+                    closeModal();
+                }
+            });
+
+            // --- Form Submission ---
+
+            // Event listener for the submit button inside the modal
+            submitNewShowButton.addEventListener('click', function() {
+                const showTitle = showTitleInput.value.trim(); // Trim whitespace
+                const redditLink = redditLinkInput.value.trim();
+                const posterImageUrl = posterImageUrlInput.value.trim();
+
+                // Basic validation: Check if at least a title is provided
+                if (showTitle) {
+                    // Use provided values or defaults if specific fields are empty
+                    const finalLink = redditLink || '#'; // Use '#' if link is emp

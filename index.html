@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Auto Slow Zoom</title>
+    <title>Full Screen Zoom + Grid Overlay</title>
     <style>
         /* Basic reset and full-screen setup */
         html, body {
@@ -11,60 +11,91 @@
             margin: 0;
             padding: 0;
             background-color: #000; /* Black background for the page */
-            display: flex; /* Use flexbox for centering */
-            align-items: center; /* Center vertically */
-            justify-content: center; /* Center horizontally */
+            /* Flexbox properties removed as overlay is now absolutely positioned full screen */
             overflow: hidden; /* Hide any potential body overflow */
+            position: relative; /* Needed for absolute positioning of children */
         }
 
-        /* Container for the image - defines horizontal aspect ratio */
+        /* Container for the main background image - full screen */
         .image-container {
-            width: 80vw; /* 80% of viewport width, adjust as needed */
-            aspect-ratio: 16 / 9; /* Enforce a horizontal (16:9) aspect ratio */
-            overflow: hidden; /* Crucial: Clip the parts of the image that zoom outside the container */
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.1); /* Optional: Subtle glow effect */
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            z-index: 1; /* Behind the thumbnail grid */
         }
 
-        /* The image itself */
+        /* The main background image itself */
         .zoom-image {
-            display: block; /* Remove extra space below image */
+            display: block;
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Scale the image to maintain aspect ratio while filling the container. Will crop if aspect ratios differ. */
-            transform-origin: center center; /* Zoom originates from the center */
-
-            /* Apply the animation: name duration timing-function delay iteration-count direction fill-mode */
+            object-fit: cover;
+            transform-origin: center center;
             animation: slowZoom 15s linear 0s infinite alternate forwards;
-            /*
-               'slowZoom': Name of the keyframes rule.
-               '15s': Duration of one zoom cycle (in or out). Adjust for speed.
-               'linear': Constant speed zoom.
-               '0s': No delay before starting.
-               'infinite': Repeat the animation forever.
-               'alternate': Reverse direction each cycle (zooms in, then out).
-               'forwards': Retain the style values from the last keyframe when the animation ends (relevant if not infinite).
-            */
-            will-change: transform; /* Hint to the browser to optimize transform animations */
+            will-change: transform;
         }
 
         /* Define the zoom animation keyframes */
         @keyframes slowZoom {
-            from {
-                /* Starting state: no zoom */
-                transform: scale(1);
-            }
-            to {
-                /* Ending state: zoomed in (e.g., 130%) */
-                transform: scale(1.3);
-            }
+            from { transform: scale(1); }
+            to { transform: scale(1.3); }
         }
+
+        /* Container for the thumbnail grid overlay - now full screen */
+        .thumbnail-grid-overlay {
+            position: absolute; /* Position relative to body */
+            top: 0;
+            left: 0;
+            width: 100vw;  /* Full viewport width */
+            height: 100vh; /* Full viewport height */
+            box-sizing: border-box; /* Include padding in width/height calculation */
+            z-index: 10; /* Ensure it's above the background image */
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 4 columns */
+            grid-template-rows: repeat(3, 1fr);    /* 3 rows */
+            gap: 10px; /* Space between thumbnails */
+            padding: 15px; /* Padding inside the overlay */
+            background-color: rgba(255, 255, 255, 0.15); /* White transparent background */
+            /* Frosted glass effect */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px); /* Safari support */
+            /* Removed border-radius, border, box-shadow, max-width, aspect-ratio */
+        }
+
+        /* Style for individual thumbnail grid cells (no image) */
+        .thumbnail-item {
+           /* Add a subtle border to make grid cells visible */
+           border: 1px solid rgba(255, 255, 255, 0.2);
+           border-radius: 4px; /* Optional: slight rounding for cells */
+           /* Ensure background/blur from parent shows through */
+        }
+
+        /* Removed .thumbnail-item img rule */
+
     </style>
 </head>
 <body>
     <div class="image-container">
         <img class="zoom-image"
-             src="image.png" alt="Auto zooming image"
-             onerror="this.onerror=null; this.src='https://placehold.co/1600x900/000000/ffffff?text=image.png+not+found'; console.error('Error: image.png not found. Displaying placeholder.');">
+             src="image.png" alt="Auto zooming background" onerror="this.onerror=null; this.src='https://placehold.co/1920x1080/000000/ffffff?text=image.png+Not+Found'; console.error('Error: Background image image.png not found.');">
              </div>
+
+    <div class="thumbnail-grid-overlay">
+        <div class="thumbnail-item"></div>
+        <div class="thumbnail-item"></div>
+        <div class="thumbnail-item"></div>
+        <div class="thumbnail-item"></div>
+        <div class="thumbnail-item"></div>
+        <div class="thumbnail-item"></div>
+        <div class="thumbnail-item"></div>
+        <div class="thumbnail-item"></div>
+        <div class="thumbnail-item"></div>
+        <div class="thumbnail-item"></div>
+        <div class="thumbnail-item"></div>
+        <div class="thumbnail-item"></div>
+    </div>
 </body>
 </html>

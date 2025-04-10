@@ -11,9 +11,10 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            /* Using a standard sans-serif stack */
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
             background-color: #000; /* Black background for the page */
-            overflow-x: hidden;
+            overflow-x: hidden; /* Prevent horizontal scroll */
         }
 
         *, *:before, *:after {
@@ -22,151 +23,167 @@
 
         /* --- Background Image Container --- */
         .image-container {
-            position: fixed;
+            position: fixed; /* Fixed position to stay in background */
             top: 0;
             left: 0;
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            /* UPDATED z-index: Place above body background, below grid */
-            z-index: 0;
+            width: 100vw; /* Full viewport width */
+            height: 100vh; /* Full viewport height */
+            overflow: hidden; /* Hide parts of image outside container */
+            z-index: 0; /* Behind the grid content */
         }
 
         /* --- The Zooming Background Image --- */
         .zoom-image {
-            display: block;
+            display: block; /* Remove extra space below image */
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            transform-origin: center center;
+            object-fit: cover; /* Cover container, maintain aspect ratio */
+            transform-origin: center center; /* Zoom from the center */
+            /* Animation definition */
             animation: slowZoom 20s linear infinite alternate;
-            will-change: transform;
+            will-change: transform; /* Optimize animation performance */
         }
 
         /* --- Zoom Animation Keyframes --- */
         @keyframes slowZoom {
-            from { transform: scale(1); }
-            to { transform: scale(1.2); }
+            from { transform: scale(1); } /* Start at normal size */
+            to { transform: scale(1.2); } /* Zoom in slightly */
         }
-
 
         /* --- Content Styling --- */
         body {
-            color: #333;
+            color: #eee; /* Lighter text color for dark background */
             line-height: 1.6;
         }
 
         /* --- Grid Container Styling --- */
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 25px;
-            max-width: 1300px;
-            margin: 60px auto 40px auto;
-            padding: 10px;
-            position: relative; /* Keep relative for z-index context */
-            z-index: 1; /* Ensure grid is above background (z-index: 0) */
+            /* Responsive grid columns */
+            grid-template-columns: repeat(4, 1fr); /* Default: 4 columns */
+            gap: 25px; /* Space between grid items */
+            max-width: 1300px; /* Max width of the grid */
+            margin: 60px auto 40px auto; /* Center grid with top/bottom margin */
+            padding: 10px; /* Padding around the grid */
+            position: relative; /* Needed for z-index stacking */
+            z-index: 1; /* Ensure grid is above background */
         }
 
-        /* --- Grid Item Styling (Restored Frosted Glass) --- */
+        /* --- Grid Item Styling (Frosted Glass Effect) --- */
         .grid-item {
+            /* Semi-transparent white background */
             background-color: rgba(255, 255, 255, 0.1);
+            /* Apply blur effect to background behind the item */
             backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border-radius: 12px;
+            -webkit-backdrop-filter: blur(8px); /* Safari support */
+            border-radius: 12px; /* Rounded corners */
+            /* Subtle shadow for depth */
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            /* Subtle border */
             border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 20px;
+            padding: 20px; /* Inner spacing */
             text-align: center;
-            overflow: hidden;
+            overflow: hidden; /* Prevent content spillover */
+            /* Smooth transitions for hover effects */
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: center;
+            display: flex; /* Use flexbox for alignment */
+            flex-direction: column; /* Stack children vertically */
+            justify-content: flex-start; /* Align items to the top */
+            align-items: center; /* Center items horizontally */
         }
 
+        /* --- Grid Item Hover Effect --- */
         .grid-item:hover {
-             transform: translateY(-5px);
+             transform: translateY(-5px); /* Lift item slightly */
+             /* Increase shadow intensity on hover */
              box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
         }
 
-
         /* --- Styling for Content within Grid Items --- */
         .grid-item h2 {
-            margin-top: 0;
-            margin-bottom: 15px;
-            font-weight: 500;
-            font-size: 1.1em;
-            width: 100%;
+            margin-top: 0; /* Remove default top margin */
+            margin-bottom: 15px; /* Space below heading */
+            font-weight: 500; /* Medium font weight */
+            font-size: 1.1em; /* Slightly larger font size */
+            width: 100%; /* Take full width */
         }
 
+        /* --- Styling for Links within Headings --- */
         .grid-item h2 a {
-            color: #ffebcd;
-            text-decoration: none;
-            transition: color 0.2s ease-in-out;
+            color: #ffebcd; /* Blanched Almond color for links */
+            text-decoration: none; /* Remove underline */
+            transition: color 0.2s ease-in-out; /* Smooth color change */
+            /* Subtle text shadow for readability */
             text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
         }
 
+        /* --- Link Hover/Focus State --- */
         .grid-item h2 a:hover,
         .grid-item h2 a:focus {
-            color: #fff;
-            text-decoration: underline;
+            color: #fff; /* Whiter color on hover/focus */
+            text-decoration: underline; /* Add underline on hover/focus */
         }
 
-
+        /* --- Styling for Show Posters --- */
         .grid-item .show-poster {
-            display: block;
-            max-width: 100%;
-            width: auto;
-            height: auto;
-            max-height: 250px;
-            margin: 15px 0 0 0;
-            border-radius: 8px;
+            display: block; /* Ensure it behaves like a block element */
+            max-width: 100%; /* Don't exceed parent width */
+            width: auto; /* Maintain aspect ratio */
+            height: auto; /* Maintain aspect ratio */
+            max-height: 250px; /* Limit maximum height */
+            margin: 15px 0 0 0; /* Top margin */
+            border-radius: 8px; /* Rounded corners for poster */
+            /* Subtle border */
             border: 1px solid rgba(255, 255, 255, 0.1);
+            /* Shadow for poster */
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            object-fit: contain;
+            object-fit: contain; /* Fit image within bounds, maintain aspect ratio */
+            /* Slight background tint if image is transparent */
             background-color: rgba(0,0,0,0.1);
         }
 
-        /* --- Styling for Empty Grid Items --- */
+        /* --- Styling for Empty Grid Items (Placeholders) --- */
         .grid-item.empty {
-            backdrop-filter: blur(15px);
+            backdrop-filter: blur(15px); /* Stronger blur for empty items */
             -webkit-backdrop-filter: blur(15px);
-            aspect-ratio: 2 / 3;
+            aspect-ratio: 2 / 3; /* Maintain a typical poster aspect ratio */
+            /* Lighter background for empty items */
             background-color: rgba(255, 255, 255, 0.08);
+             /* Disable hover effects */
              transition: none;
              transform: none;
-             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-             padding: 0;
+             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15); /* Keep base shadow */
+             padding: 0; /* No padding */
+             /* Dashed border to indicate placeholder */
              border: 1px dashed rgba(255, 255, 255, 0.2);
         }
          .grid-item.empty:hover {
+             /* Ensure no transform/shadow change on hover */
              transform: none;
              box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
          }
 
-
+        /* --- Utility for breaking long links --- */
         a { word-break: break-all; }
 
-        /* --- Responsive Grid --- */
+        /* --- Responsive Grid Adjustments --- */
         @media (max-width: 1200px) {
             .grid-container {
-                grid-template-columns: repeat(3, 1fr);
-                max-width: 95%;
+                grid-template-columns: repeat(3, 1fr); /* 3 columns */
+                max-width: 95%; /* Slightly wider */
             }
         }
         @media (max-width: 768px) {
             .grid-container {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(2, 1fr); /* 2 columns */
             }
         }
         @media (max-width: 480px) {
             .grid-container {
-                grid-template-columns: 1fr;
-                gap: 15px;
+                grid-template-columns: 1fr; /* 1 column */
+                gap: 15px; /* Reduce gap */
             }
-             .grid-item { padding: 15px; }
+             .grid-item { padding: 15px; } /* Reduce padding */
         }
 
     </style>
@@ -189,7 +206,9 @@
             </h2>
             <img src="daredevil-born-again-poster.png"
                  alt="Poster for Daredevil: Born Again showing Kingpin and Daredevil"
-                 class="show-poster" id="daredevil-poster">
+                 class="show-poster"
+                 id="daredevil-poster"
+                 onerror="this.onerror=null; this.src='https://placehold.co/200x300/333333/eeeeee?text=Daredevil'; console.error('Error loading image: daredevil-born-again-poster.png');">
         </div>
 
         <div class="grid-item">
@@ -200,7 +219,9 @@
             </h2>
              <img src="The Studio.jpg"
                  alt="Poster for The Studio TV show featuring Seth Rogen"
-                 class="show-poster" id="studio-poster">
+                 class="show-poster"
+                 id="studio-poster"
+                 onerror="this.onerror=null; this.src='https://placehold.co/200x300/333333/eeeeee?text=The+Studio'; console.error('Error loading image: The Studio.jpg');">
         </div>
 
         <div class="grid-item">
@@ -211,20 +232,20 @@
             </h2>
              <img src="common side effect.jpg"
                   alt="Poster for Common Side Effects animated series"
-                  class="show-poster" id="cse-poster">
-    <div class="grid-item">
-    <h2>
-        <a href="https://www.reddit.com/r/PantheonShow/comments/18wdhr5/pantheon_series_episode_discussion_threads/" target="_blank" rel="noopener noreferrer">
-            Pantheon
-        </a>
-    </h2>
-    <img src="pantheon.jpg"
-         alt="Poster for Pantheon"
-         class="show-poster"
-         id="pantheon-poster">
-         
-
-   
+                  class="show-poster"
+                  id="cse-poster"
+                  onerror="this.onerror=null; this.src='https://placehold.co/200x300/333333/eeeeee?text=CSE'; console.error('Error loading image: common side effect.jpg');">
+        </div> <div class="grid-item"> <h2>
+                <a href="https://www.reddit.com/r/PantheonShow/comments/18wdhr5/pantheon_series_episode_discussion_threads/" target="_blank" rel="noopener noreferrer">
+                    Pantheon
+                </a>
+            </h2>
+            <img src="pantheon.jpg"
+                 alt="Poster for Pantheon"
+                 class="show-poster"
+                 id="pantheon-poster"
+                 onerror="this.onerror=null; this.src='https://placehold.co/200x300/333333/eeeeee?text=Pantheon'; console.error('Error loading image: pantheon.jpg');">
+        </div> <div class="grid-item empty"></div>
         <div class="grid-item empty"></div>
         <div class="grid-item empty"></div>
         <div class="grid-item empty"></div>
@@ -232,12 +253,5 @@
         <div class="grid-item empty"></div>
         <div class="grid-item empty"></div>
         <div class="grid-item empty"></div>
-        <div class="grid-item empty"></div>
-        <div class="grid-item empty"></div>
-    </div>
-
-    </body>
+        </div> </body>
 </html>
-```
-
-Please update your `index.html` file on GitHub with this code, let Render deploy, and then check if the background image `image.png` appears behind the gr
